@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.springbootstudy.bbs.mapper.BoardMapper" >
+
+	<select id="boardList" parameterType="map" resultType="Board">	
+		SELECT 
+			no, 
+			title, 
+			writer, 
+			content, 
+			reg_date AS regDate,
+			read_count AS readCount,
+			pass,
+			file1 
+		FROM springbbs
+	
+		<where>	
+			<if test="type == 'title'">
+				title LIKE CONCAT('%', #{keyword}, '%')
+			</if>
+			<if test="type == 'writer'">
+				writer LIKE CONCAT('%', #{keyword}, '%')
+			</if>
+			<if test="type == 'content'">
+				content LIKE CONCAT('%', #{keyword}, '%')
+			</if>	
+		</where>
+		ORDER BY no DESC
+		LIMIT #{startRow}, #{num}
+	</select>
+
+	<select id="getBoardCount" parameterType="map" resultType="int">
+		SELECT 
+			COUNT(no) 
+		FROM springbbs
+	
+		<where>	
+			<if test="type == 'title'">
+				title LIKE CONCAT('%', #{keyword}, '%')
+			</if>
+			<if test="type == 'writer'">
+				writer LIKE CONCAT('%', #{keyword}, '%')
+			</if>
+			<if test="type == 'content'">
+				content LIKE CONCAT('%', #{keyword}, '%')
+			</if>	
+		</where>	
+	</select>
+
+	<select id="getBoard" resultType="Board">
+		SELECT 
+			* 
+		FROM springbbs 
+		WHERE no = #{no}
+	</select>
+
+	<insert id="insertBoard" parameterType="Board"
+		useGeneratedKeys="true" keyProperty="no">
+		INSERT INTO springbbs(title, writer, content, 
+				reg_date, read_count, pass, file1)
+				
+			VALUES(#{title}, #{writer}, #{content}, 
+				SYSDATE(), #{readCount}, #{pass}, #{file1})
+	</insert>
+
+	<select id="isPassCheck">
+		SELECT 
+			pass
+		FROM springbbs
+		WHERE no = #{no}
+	</select>
+
+	<update id="updateBoard" parameterType="Board">
+		UPDATE springbbs 
+			SET title = #{title}, content = #{content},
+				reg_date = SYSDATE()
+		WHERE no = #{no}
+	</update>
+
+	<delete id="deleteBoard">
+		DELETE FROM springbbs
+		WHERE no = #{no}
+	</delete>
+
+	<update id="incrementReadCount">
+		UPDATE springbbs
+			SET read_count = read_count + 1
+		WHERE no = #{no}
+	</update>
+
+</mapper>	
+
+
+

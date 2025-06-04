@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<link href="/bootstrap/bootstrap.min.css" rel="stylesheet">
+<link th:href="@{/bootstrap/bootstrap.min.css}" rel="stylesheet">
+</head>
+<body>
+	<h1 th:text="#{thymeleaf3.title}" class="fw-bold">Thymleaf3</h1>
+	<div th:if="${score >= 60}">if - 점수 [[${score}]] - 합격</div>
+	<div th:unless="${score lt 60}">unless - 점수 [[${score}]] - 합격</div>
+	<div th:unless="${score gt 60}">unless - gt 점수 [[${score}]] - 불합격</div>
+	
+	<div th:swith="${s}" th:with="s = ${score} / 10">
+		<span th:case="9">점수 : 90점대</span>
+		<span th:case="8">점수 : 80점대</span>
+		<span th:case="7">점수 : 70점대</span>
+		<span th:case="6">점수 : 60점대</span>
+		<span th:case="*">낙제</span> <!-- * -> default를 의미 -->
+	</div>
+	
+	<div th:text="${memo} != null ? '삼 항 연산자-메모 있음' : '삼 항 연산자-메모 없음'"></div>
+	
+	<div th:text="${memo} != null ?: 'Elvis 연산자 true of false'"></div>
+	<div th:text="${memo} ?: 'Elvis 연산자 - 메모 없음'"></div>
+	
+	<div th:text="${memo} != null ?: _">No-Operation-메모 없음</div>
+ 	<div th:text="${memo} ?: _">No-Operation-메모 없음'"></div>
+	
+	<a th:href="@{thymeleaf1}">처음으로</a>
+	<a th:href="@{thymeleaf2/{no}(no=${param.no})}">이전으로</a>
+</body>
+</html>

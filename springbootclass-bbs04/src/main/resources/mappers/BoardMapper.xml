@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--	
+	마이바티스 참고 사이트
+	  - http://blog.mybatis.org/
+	  - http://www.mybatis.org/mybatis-3/ko/index.html
+	  
+	@Mapper 애노테이션이 적용된 인터페이스와 맵퍼 XML파일은
+	namespace 속성으로 연결되기 때문에 맵퍼 XML의 namespace를
+	지정할 때 @Mapper 애노테이션이 적용된 맵퍼 인터페이스의
+	완전한 클래스 이름(패키지를 포함한 이름)을 지정하면 된다.   
+-->
+<mapper namespace="com.springbootstudy.bbs.mapper.BoardMapper" >
+
+	<!-- no에 해당하는 게시 글의 읽은 횟수를 증가 시키는 맵핑구문 -->
+	<update id="incrementReadCount">
+		UPDATE springbbs
+			SET read_count = read_count + 1
+		WHERE no = #{no}
+	</update>
+
+	<!-- DB 테이블에서 no 게시 글을 삭제 -->
+	<delete id="deleteBoard">
+		DELETE FROM springbbs
+		WHERE no = #{no}
+	</delete>
+
+	<!-- 게시 글을 DB 테이블에서 수정하는 맵핑 구문 -->
+	<update id="updateBoard" parameterType="Board">
+		UPDATE springbbs
+			SET title=#{title}, content=#{content}, reg_date=SYSDATE()
+		WHERE no=#{no}
+	</update>
+
+	<!-- no에 해당하는 비밀번호를 읽어오는 맵핑 구문 -->
+	<select id="isPassCheck" parameterType="int" resultType="String">
+		SELECT
+			pass
+		FROM springbbs
+		WHERE no=#{no}
+	</select>
+
+	<!-- 게시글 정보를 받아서 DB 테이블에 게시글을 저장하는 맵핑 구문 -->
+	<insert id="insertBoard" parameterType="Board">
+		INSERT INTO springbbs(title, writer, 
+						content, reg_date, read_count, pass, file1)
+		
+		VALUES(#{title}, #{writer}, 
+						#{content}, SYSDATE(), #{readCount}, #{pass}, #{file1})
+	</insert>
+
+	<!-- no에 해당하는 게시 글 하나를 읽어오는 맵핑 구문-->
+	<select id="getBoard" resultType="Board">
+		SELECT 
+			* 
+		FROM springbbs 
+		WHERE no=#{no}
+	</select>
+
+	<!-- 
+		한 페이지에 해당하는 게시글 리스트를 읽어오는 맵핑 구문	
+	-->
+	<select id="boardList" resultType="Board" parameterType="map">
+		SELECT 
+			no,
+		    title,
+		    writer,
+		    content,
+		    reg_date AS regDate,
+		    read_count readCount,
+		    pass,
+		    file1
+		FROM springbbs
+		<where>
+			<if test="type == 'title'">
+				title LIKE CONCAT('%', #{keyword}, '%')
+			</if>
+			<if test="type == 'writer'">
+				writer LIKE CONCAT('%', #{keyword}, '%')
+			</if>
+			<if test="type == 'content'">
+				content LIKE CONCAT('%', #{keyword}, '%')
+			</if>						
+		</where>
+		ORDER BY no DESC
+		LIMIT #{startRow}, #{num}
+	</select>
+	
+	<!-- 전체 게시 글 수를 읽어오는 맵핑 구문 -->
+	<select id="getBoardCount" resultType="int" parameterType="map">
+		SELECT 
+			COUNT(no) 
+		FROM springbbs
+		<where>		
+			<if test="type == 'title'">
+				title LIKE CONCAT('%', #{keyword}, '%')
+			</if>
+			<if test="type == 'writer'">
+				writer LIKE CONCAT('%', #{keyword}, '%')
+			</if>
+			<if test="type == 'content'">
+				content LIKE CONCAT('%', #{keyword}, '%')
+			</if>						
+		</where>
+	</select>
+	
+</mapper>	
+
+
+

@@ -25,6 +25,14 @@ public class MemberController {
 	@Autowired
 	private MemberService memberService;
 	
+	@GetMapping("/overlapIdCheck")
+	public String overlapIdCheck(Model model, @RequestParam("id") String id) {
+		
+		model.addAttribute("id", id);
+		
+		return "member/overlapIdCheck";
+	}
+	
 //	로그인 요청을 받는 메서드
 	@PostMapping("/login")
 	public String login(Model model, @RequestParam("userId") String id, @RequestParam("pass") String pass,

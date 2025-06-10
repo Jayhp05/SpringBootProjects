@@ -16,6 +16,18 @@ public class MemberService {
 	@Autowired
 	private MemberMapper memberMapper;
 	
+	public boolean overlapIdCheck(String id) {
+		Member member = memberMapper.getMember(id);
+		
+		log.info("overlapIdCheck - member : " + member);
+		
+		if(member == null) { 
+			return false;
+		}
+		
+		return true;
+	}
+	
 //	회원 로그인, 회원 가입시 암호화 처리
 	@Autowired
 	private PasswordEncoder passwordEncoder;

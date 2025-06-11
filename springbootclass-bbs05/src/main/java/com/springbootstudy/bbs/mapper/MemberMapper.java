@@ -8,4 +8,7 @@ import com.springbootstudy.bbs.domain.Member;
 public interface MemberMapper {
 
 	public Member getMember(String id); 
+	
+	// 회원 정보를 회원 테이블에 저장하는 메서드
+	public void addMember(Member member);
 }

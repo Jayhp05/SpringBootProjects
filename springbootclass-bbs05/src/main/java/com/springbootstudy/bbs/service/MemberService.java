@@ -28,9 +28,17 @@ public class MemberService {
 		return true;
 	}
 	
-//	회원 로그인, 회원 가입시 암호화 처리
+	//	회원 로그인, 회원 가입시 암호화 처리
 	@Autowired
 	private PasswordEncoder passwordEncoder;
+	
+	public void addMember(Member member) {
+		member.setPass(passwordEncoder.encode(member.getPass()));
+		
+		log.info(member.getPass());
+		
+		memberMapper.addMember(member);
+	}
 	
 	public int login(String id, String pass) {
 		int result = -1;

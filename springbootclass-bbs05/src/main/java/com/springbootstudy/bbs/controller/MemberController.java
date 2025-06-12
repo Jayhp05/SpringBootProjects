@@ -25,6 +25,52 @@ public class MemberController {
 	@Autowired
 	private MemberService memberService;
 	
+	@GetMapping("/memberUpdateForm")
+	public String updateForm(Model model) {
+		
+		return "member/memberUpdateForm";
+	}
+	
+	@PostMapping("/memberUpdateResult")
+	public String memberUpdateInfo(Model model, Member member,
+			@RequestParam("pass1") String pass1, 
+			@RequestParam("emailId") String emailId, 
+			@RequestParam("emailDomain") String emailDomain,
+			@RequestParam("mobile1") String mobile1, 
+			@RequestParam("mobile2") String mobile2, 
+			@RequestParam("mobile3") String mobile3,
+			@RequestParam("phone1") String phone1, 
+			@RequestParam("phone2") String phone2, 
+			@RequestParam("phone3") String phone3,
+			@RequestParam(value="emailGet", required=false, 
+			defaultValue="false")boolean emailGet) {
+		
+		member.setPass(pass1);
+		member.setEmail(emailId + "@" + emailDomain);
+		member.setMobile(mobile1 + "-" + mobile2 + "-" + mobile3);
+		
+		if(phone2.equals("") || phone3.equals("")) {
+			member.setPhone("");
+		} 
+		else {
+			member.setPhone(phone1 + "-" + phone2 + "-" + phone3);
+		}
+		
+		member.setEmailGet(Boolean.valueOf(emailGet));
+	 
+		// MemberService를 통해서 회원 수정 폼에서 들어온 데이터를 DB에서 수정한다.
+		memberService.updateMember(member);
+		
+		/* 클래스 레벨에 @SessionAttributes({"member"}) 
+		* 애노테이션을 지정하고 컨트롤러의 메서드에서 아래와 같이 동일한 
+		* 이름으로 모델에 추가하면 스프링이 세션 영역에 데이터를 저장해 준다.
+		**/ 
+		model.addAttribute("member", member);
+
+		// 게시글 리스트로 리다이렉트 시킨다.
+		return "redirect:boardList";
+	}
+	
 	@PostMapping("/joinResult")
 	public String joinResult(Model model, Member member,
 			@RequestParam("pass1") String pass1, 

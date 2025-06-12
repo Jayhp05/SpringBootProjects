@@ -32,12 +32,31 @@ public class MemberService {
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 	
+	public void updateMember(Member member) {
+		// BCryptPasswordEncoder 객체를 이용해 비밀번호를 암호화한 후 저장
+		member.setPass(passwordEncoder.encode(member.getPass()));
+		log.info(member.getPass());
+		memberMapper.updateMember(member);
+	}
+	
 	public void addMember(Member member) {
 		member.setPass(passwordEncoder.encode(member.getPass()));
 		
 		log.info(member.getPass());
 		
 		memberMapper.addMember(member);
+	}
+	
+	public boolean memberPassCheck(String id, String pass) {
+		String dbPass = memberMapper.memberPassCheck(id);
+		
+		boolean result = false;
+		
+		if(passwordEncoder.matches(pass, dbPass)) {
+			result = true;
+		}
+		
+		return result;
 	}
 	
 	public int login(String id, String pass) {

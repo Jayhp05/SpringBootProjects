@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layouts/main_layout}">
+	<!-- content -->
+	<th:block layout:fragment="content">
+		<div class="row my-5" id="global-content">
+			<script th:src="@{js/reply.js}"></script>
+			<div class="col-10 offset-1">
+				<form name="checkForm" id="checkForm">
+					<input type="hidden" name="no" id="no" th:value="${board.no}" >
+					<input type="hidden" name="pass" id="rPass" />
+					<input type="hidden" name="pageNum" th:value="${pageNum}" />	
+					<th:block th:if="${searchOption}">
+						<input type="hidden" name="type" th:value="${type}">
+						<input type="hidden" name="keyword" th:value="${keyword}">
+					</th:block>				
+				</form>
+				<div class="row text-center">
+					<div class="col">
+						<h2 class="fs-3 fw-bold">게시글 상세보기</h2>
+					</div>
+				</div> 
+				<div class="row my-3">
+					<div class="col">
+						<table class="table table-bordered" >
+							<tbody>					
+								<tr>
+									<th class="table-secondary">제 목</th>
+									<td colspan="3" th:text="${board.title}">게시글 제목</td>		
+								</tr>
+								<tr>
+									<th>글쓴이</th>
+									<td th:text="${board.writer}">작성자</td>
+									<th>작성일</th>
+									<td>[[${ #dates.format(board.regDate, 'yyyy-MM-dd HH:mm:ss')}]]</td>		
+								</tr>
+								<tr>		
+									<th>비밀번호</th>
+									<td>
+										<div class="col-sm-8">
+											<input class="form-control" type="password" name="pass" id="pass">
+										</div>
+									</td>
+									<th>조회수</th>
+									<td th:text="${board.readCount}"></td>
+								</tr>	
+								<tr>
+									<th>파&nbsp;&nbsp;&nbsp;&nbsp;일</th>
+									<td colspan="3">		
+										<th:block th:if="${ not #strings.isEmpty(board.file1) }">
+											<a th:href="@{|fileDownload?fileName=${board.file1}|}">다운로드</a>
+										</th:block>
+										<th:block th:unless="${ not #strings.isEmpty(board.file1) }">
+											첨부파일 없음
+										</th:block>				
+									</td>		
+								</tr>
+								<tr>		
+									<td colspan="4" style="white-space: pre">[[${board.content}]]</td>
+								</tr>	
+							</tbody>
+						</table>
+					</div>
+				</div>
+				<div class="row my-3">
+					<div class="col text-center">
+						<input class="btn btn-warning" type="button" id="detailUpdate" value="수정하기"/>
+						&nbsp;&nbsp;<input class="btn btn-danger"  type="button" id="detailDelete" value="삭제하기" />
+						<!-- 일반 게시글 리스트에서 온 경우 -->
+						<th:block th:unless="${searchOption}">
+						&nbsp;&nbsp;<input class="btn btn-primary" type="button" value="목록보기" 
+							th:onclick="@{|location.href='boardList?pageNum=${pageNum}'|}"/>
+						</th:block>							
+						<!-- 검색 리스트에서 온 경우 -->
+						<th:block th:if="${searchOption}">
+						&nbsp;&nbsp;<input class="btn btn-primary" type="button" value="목록보기" 
+							th:onclick="@{|location.href='boardList?pageNum=${pageNum}&type=${type}&keyword=${keyword}'|}"/>	
+						</th:block>	
+					</div>
+				</div>
+				<!-- 추천/땡큐 영역 -->
+				<div class="row my-5">
+					<div class="col border p-3">
+						<div id="recommend" class="text-end">
+							<span id="commend" class="btnCommend text-primary" style="cursor: pointer;"> 
+								<img src="images/recommend.png" alt="추천하기" />&nbsp;추천
+								<span class="recommend" th:text="|(${board.recommend})|"></span>
+							</span> |
+							<span id="thank" class="btnCommend text-primary" style="cursor: pointer;">
+								<img src="images/smile.png" alt="땡큐"/>&nbsp;땡큐
+								<span class="recommend" th:text="|(${board.thank})|"></span>
+							</span> |	
+							<span id="replyWrite" class="text-primary" style="cursor: pointer;">						
+								<i class="bi bi-file-earmark-text-fill" style="color: cornflowerblue;"></i> 댓글쓰기
+								<!-- <i class="bi bi-card-fill" style="color: cornflowerblue;"></i> 댓글 -->
+							</span>					
+						</div>
+					</div>
+				</div>				
+				<!-- 댓글 헤더 영역 -->
+				<div class="row" id="replyTitle">
+					<div class="col p-2 text-center bg-dark text-white">	
+						<h3 class="fs-4">이 글에 대한 댓글 리스트</h3>								
+					</div>
+				</div>						
+				<!-- 댓글 리스트 영역 -->
+				<!-- 댓글이 존재하는 경우 -->				
+				<div th:if="${not #lists.isEmpty(replyList)}" class="row mb-3">
+					<div class="col" id="replyList">							
+						<div th:each="reply : ${replyList}" class="replyRow row border border-top-0">
+							<div class="col">
+								<div class="row bg-light p-2">
+									<div class="col-4">
+										<span th:text="${reply.replyWriter}">댓글 작성자</span>
+									</div>
+									<div class="col-8 text-end">
+										<span class="me-3">
+											[[${ #dates.format(reply.regDate, 'yyyy-MM-dd HH:mm:ss') }]]
+										</span>
+										<button class="modifyReply btn btn-outline-success btn-sm" th:data-no="${reply.no}">
+											<i class="bi bi-journal-text">수정</i>									
+										</button>
+										<button class="deleteReply btn btn-outline-warning btn-sm" th:data-no="${reply.no}">
+											<i class="bi bi-trash">삭제</i>
+										</button>
+										<button class="btn btn-outline-danger btn-sm" th:onclick="reportReply('${reply.no}')">
+											<i class="bi bi-telephone-outbound">신고</i>									
+										</button>
+									</div>
+								</div>	
+								<div class="row">
+									<div class="col p-3">
+										<pre th:text="${reply.replyContent}">댓글 내용</pre>
+									</div>
+								</div>
+							</div>	
+						</div>
+					</div>
+				</div>				
+				<!-- 댓글이 존재하지 않는 경우 -->
+				<div th:unless="${not #lists.isEmpty(replyList)}" class="row mb-3">
+					<div class="col" id="replyList">							
+						<div class="replyRow row border border-top-0">
+							<div class="col text-center p-5">
+								이 게시 글에 대한 댓글이 존재하지 않습니다.
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- 댓글 쓰기 폼 -->
+				<div class="row my-3 d-none" id="replyForm">
+					<div class="col">
+						<form name="replyWriteForm" id="replyWriteForm">
+							<input type="hidden" name="bbsNo" th:value="${board.no}"/>
+							<input type="hidden" name="replyWriter" th:value="${session.member.id}" />
+							<div class="row bg-light my-3 p-3 border">
+								<div class="col">
+									<div class="row">
+										<div class="col text-center">
+											<span>악의적인 댓글은 예고 없이 삭제될 수 있으며 글쓰기 제한과 아이디 삭제 처리됩니다.</span>
+										</div>
+									</div>						
+									<div class="row my-3">								
+										<div class="col-md-10">
+											<textarea name="replyContent" id="replyContent" class="form-control" rows="4"></textarea>
+										</div>
+										<div class="col-md">
+											<input type="submit" value="댓글쓰기"	 class="btn btn-primary h-100 w-100" id="replyWriteButton">									
+										</div>
+									</div>
+								</div>
+							</div>
+						</form>	
+					</div>	
+				</div>
+				<!-- end 댓글 쓰기 폼 -->
+			</div>	
+		</div>	
+	</th:block>				
+</html>

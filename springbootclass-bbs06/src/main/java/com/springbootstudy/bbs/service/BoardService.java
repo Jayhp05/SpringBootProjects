@@ -26,6 +26,16 @@ public class BoardService {
 	@Autowired
 	private BoardMapper boardMapper;
 	
+	// 댓글 번호에 해당하는 댓글을 수정하는 메서드
+	public void updateReply(Reply reply) {
+		boardMapper.updateReply(reply); 
+	}
+	
+	// 현재 게시글에 해당하는 댓글을 등록하는 메서드
+	public void addReply(Reply reply) {
+		boardMapper.addReply(reply);
+	}
+	
 	// 추천/땡큐 정보를 업데이트하고 갱신된 추천/땡큐를 가져오는 메서드
 	public Map<String, Integer> recommend(int no, String recommend) {
 		

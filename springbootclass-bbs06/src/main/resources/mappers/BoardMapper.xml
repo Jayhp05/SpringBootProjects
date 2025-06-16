@@ -13,6 +13,20 @@
 -->
 <mapper namespace="com.springbootstudy.bbs.mapper.BoardMapper" >
 
+	<!-- 댓글을 수정하는 맵핑 구문  -->
+	<update id="updateReply" parameterType="Reply">
+		UPDATE reply
+			SET reply_content = #{replyContent}, 
+				reg_date = SYSDATE()
+		WHERE no = #{no}
+	</update>
+
+	<!-- 댓글을 추가하는 맵핑 구문  -->
+	<insert id="addReply" parameterType="Reply">
+		INSERT INTO reply(bbs_no, reply_content, reply_writer, reg_date)
+		VALUES(#{bbsNo}, #{replyContent}, #{replyWriter}, SYSDATE())
+	</insert>
+
 	<!-- 추천/땡큐 정보를 업데이트하는 맵핑 구문 -->
 	<update id="updateRecommend">
  		UPDATE springbbs

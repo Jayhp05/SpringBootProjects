@@ -225,4 +225,89 @@ $(function() {
 		// 폼이 submit 되는 것을 취소한다.
 		return false;
 	});
+	
+	/* 댓글 삭제 버튼이 클릭되면 */
+	$(document).on("click", ".deleteReply", function() {
+	
+		$("#global-content > div").append($("#replyForm").slideUp(300));
+		$("#replyContent").val("");
+		
+		var no = $(this).attr("data-no");
+		var writer = $(this).parent().prev().find("span").text();
+		var bbsNo = $("#replyForm input[name=bbsNo]").val();
+		var params = "no=" + no + "&bbsNo=" + bbsNo;
+		
+		console.log(params);
+		
+		var result = confirm(writer + "님이 작성한 " + no +"번 댓글을 삭제하시겠습니까?");
+		
+		if(result) {
+			$.ajax({
+				url: "replyDelete.ajax",
+				type: "delete",
+				data: params,
+				dataType: "json",
+				success: function(resData, status, xhr) {
+					console.log(resData);
+					$("#replyList").empty();
+					// 반복문을 통해서 - html 형식으로 작성
+					$.each(resData, function(i, v) {
+						// v.regData == 1672300816000
+						var date = new Date(v.regDate);
+						var strDate = date.getFullYear() + "-" + ((date.getMonth() + 1 < 10) ? "0" + (date.getMonth() + 1) : (date.getMonth() + 1)) + "-"
+										+ (date.getDate() < 10 ? "0" + date.getDate() : date.getDate()) +  " " 
+										+ (date.getHours() < 10 ? "0" + date.getHours() : date.getHours()) + ":"
+										+ (date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes()) + ":"
+										+ (date.getSeconds() < 10 ? "0" + date.getSeconds() : date.getSeconds());
+										
+						var result = 
+									'<div class="row border border-top-0 replyRow">'
+									+ '<div class="col">'
+									+ ' <div class="row bg-light p-2">'
+									+ ' 	<div class="col-4">'
+									+ '			<span>' + v.replyWriter + '</span>'
+									+ ' 	</div>'
+									+ ' 	<div class="col-8 text-end">'
+									+ '			<span class="me-3">' + strDate + "</span>"
+									+ '			<button class="modifyReply btn btn-outline-success btn-sm" data-no="' + v.no + '">'
+									+ '				<i class="bi bi-journal-text">수정</i>'
+									+ '			</button>'
+									+ '			<button class="deleteReply btn btn-outline-warning btn-sm" data-no="' + v.no + '">'
+									+ '				<i class="bi bi-trash">삭제</i>'
+									+ '			</button>'
+									+ '			<button class="btn btn-outline-danger btn-sm" onclick="reportReply(\'' + v.no + '\')">'
+									+ '				<i class="bi bi-telephone-outbound">신고</i>'
+									+ '			</button>'
+									+ ' 	</div>'
+									+ ' </div>'
+									+ ' <div class="row">'
+									+ ' 	<div class="col p-3">'
+									+ '			<pre>' + v.replyContent + '</pre>'
+									+ ' 	</div>'
+									+ ' </div>'
+									+ '</div>'
+								+ '</div>'
+								
+						$("#replyList").append(result);
+					}); // end $.each()
+				},
+				error: function(xhr, status, error) {
+					alert("ajax 실패 : " + status + " - " + xhr.status);
+				}
+			});
+		}
+		// 앵커 태그에 의해 페이지가 이동되는 것을 취소한다.
+		return false;
+	});
+	
+	/* 아래는 신고하기 버튼을 임시로 연결한 함수
+	* DOM(Document Object Model)이 준비되면 호출되는 콜백 함수 밖에 작성
+	*/
+	function reportReply(elemId) {
+		var result = confirm("이 댓글을 신고하시겠습니까?");
+		
+		if(result == true) {
+			alert("report - " + result);
+		}
+	}
 });

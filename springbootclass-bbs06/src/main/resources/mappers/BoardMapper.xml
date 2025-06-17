@@ -13,6 +13,12 @@
 -->
 <mapper namespace="com.springbootstudy.bbs.mapper.BoardMapper" >
 
+	<!-- 댓글을 삭제하는 맵핑 구문  -->
+	<delete id="deleteReply" parameterType="int">
+		DELETE FROM reply
+		WHERE no = #{no}
+	</delete>
+
 	<!-- 댓글을 수정하는 맵핑 구문  -->
 	<update id="updateReply" parameterType="Reply">
 		UPDATE reply

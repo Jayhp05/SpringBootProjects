@@ -11,6 +11,9 @@ import com.springbootstudy.bbs.domain.Reply;
 @Mapper
 public interface BoardMapper {
 	
+	// DB에서 댓글 번호에 해당하는 댓글을 삭제하는 메서드
+	void deleteReply(int no);
+	
 	// DB에서 댓글 번호에 해당하는 댓글을 수정하는 메서드
 	void updateReply(Reply reply);
 

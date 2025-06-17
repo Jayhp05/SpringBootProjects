@@ -26,6 +26,11 @@ public class BoardService {
 	@Autowired
 	private BoardMapper boardMapper;
 	
+	// 댓글 번호에 해당하는 댓글을 삭제하는 메서드
+	public void deleteReply(int no) {
+		boardMapper.deleteReply(no);
+	}
+	
 	// 댓글 번호에 해당하는 댓글을 수정하는 메서드
 	public void updateReply(Reply reply) {
 		boardMapper.updateReply(reply); 

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,6 +18,16 @@ public class BoardAjaxController {
 	
 	@Autowired
 	private BoardService boardService;
+	
+	// 댓글 삭제 Ajax 요청을 처리하는 메서드
+	@DeleteMapping("/replyDelete.ajax")
+	public List<Reply> deleteReply(@RequestParam("no") int no, @RequestParam("bbsNo") int bbsNo) {
+		// 댓글 번호에 해당하는 댓글을 삭제한다.
+		boardService.deleteReply(no);
+		
+		// 새롭게 갱신된 댓글 리스트를 가져와 반환한다.
+		return boardService.replyList(bbsNo);
+	}
 	
 	// 댓글 수정 Ajax 요청을 처리하는 메서드
 	@PatchMapping("/replyUpdate.ajax")

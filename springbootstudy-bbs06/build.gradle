@@ -6,11 +6,16 @@ plugins {
 
 group = 'com.springbootstudy'
 version = '0.0.1-SNAPSHOT'
+apply plugin: 'war'
 
 java {
 	toolchain {
 		languageVersion = JavaLanguageVersion.of(21)
 	}
+}
+
+war {
+	archiveFileName="sb-bbs06.war"
 }
 
 configurations {
@@ -22,6 +27,10 @@ configurations {
 repositories {
 	mavenCentral()
 }
+
+ // 두 태스크 간의 충돌을 막기 위한 설정
+bootWar.enabled=false
+war.enabled=true
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
@@ -37,6 +46,8 @@ dependencies {
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	
 	implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect'
+	
+	providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
 }
 
 tasks.named('test') {
